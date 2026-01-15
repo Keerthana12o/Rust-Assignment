@@ -1,0 +1,149 @@
+171. Current Date/Time
+
+use chrono::Utc;
+
+fn now() {
+    let current = Utc::now();
+    println!("Current timestamp: {}", current);
+}
+
+fn main() {
+    now();
+}
+
+172. Format Date
+
+use chrono::{Utc, Datelike};
+
+fn format_date() {
+    let today = Utc::now().date_naive();
+    // Format manually: YYYY-MM-DD
+    let formatted = format!("{}-{:02}-{:02}", today.year(), today.month(), today.day());
+    println!("Formatted date: {}", formatted);
+}
+
+fn main() {
+    format_date();
+}
+
+173. Parse Date
+
+use chrono::NaiveDate;
+
+fn parse_date() {
+    let date_str = "2024-01-15";
+    let parsed = NaiveDate::parse_from_str(date_str, "%Y-%m-%d").unwrap();
+    println!("Parsed date: {}", parsed);
+}
+
+fn main() {
+    parse_date();
+}
+
+174. Add Days
+use chrono::{NaiveDate, Duration};
+
+fn add_days() {
+    let date = NaiveDate::from_ymd_opt(2024, 1, 15).unwrap();
+    let new_date = date + Duration::days(7);
+    println!("Date after 7 days: {}", new_date);
+}
+
+fn main() {
+    add_days();
+}
+
+175. Difference in Days
+use chrono::NaiveDate;
+
+fn diff_in_days() {
+    let d1 = NaiveDate::from_ymd_opt(2024, 1, 22).unwrap();
+    let d2 = NaiveDate::from_ymd_opt(2024, 1, 15).unwrap();
+    let diff = d1.signed_duration_since(d2).num_days();
+    println!("Difference in days: {}", diff);
+}
+
+fn main() {
+    diff_in_days();
+}
+
+
+
+176. Get Day of Week
+use chrono::{NaiveDate, Datelike};
+
+fn get_day_of_week() {
+    let date = NaiveDate::from_ymd_opt(2024, 1, 15).unwrap();
+    let weekday = date.weekday();
+    println!("Day of week: {}", weekday); // prints "Mon"
+}
+
+fn main() {
+    get_day_of_week();
+}
+
+
+
+177. Start of Day
+use chrono::{NaiveDate, NaiveDateTime};
+
+fn start_of_day() {
+    let date = NaiveDate::from_ymd_opt(2024, 1, 15).unwrap();
+    let start = NaiveDateTime::new(date, chrono::NaiveTime::from_hms_opt(0,0,0).unwrap());
+    println!("Start of day: {}", start);
+}
+
+fn main() {
+    start_of_day();
+}
+
+
+
+178. End of Day
+use chrono::{NaiveDate, NaiveDateTime};
+
+fn end_of_day() {
+    let date = NaiveDate::from_ymd_opt(2024, 1, 15).unwrap();
+    let end = NaiveDateTime::new(date, chrono::NaiveTime::from_hms_opt(23,59,59).unwrap());
+    println!("End of day: {}", end);
+}
+
+fn main() {
+    end_of_day();
+}
+
+
+
+179. Is Leap Year
+fn is_leap_year(year: i32) -> bool {
+    (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0)
+}
+
+fn main() {
+    println!("2024 leap year? {}", is_leap_year(2024));
+}
+
+
+
+180. Time Ago Format
+use chrono::{Utc, Duration, NaiveDateTime};
+
+fn time_ago() {
+    let now = Utc::now().naive_utc();
+    let past = NaiveDateTime::new(
+        chrono::NaiveDate::from_ymd_opt(2024, 1, 15).unwrap(),
+        chrono::NaiveTime::from_hms_opt(10,0,0).unwrap()
+    );
+    let diff = now - past;
+
+    if diff.num_hours() < 24 {
+        println!("{} hours ago", diff.num_hours());
+    } else {
+        println!("{} days ago", diff.num_days());
+    }
+}
+
+fn main() {
+    time_ago();
+}
+

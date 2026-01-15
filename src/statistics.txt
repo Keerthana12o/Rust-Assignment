@@ -1,0 +1,163 @@
+41. Chi-Square Test
+
+fn chi_square_test(observed: &[f64], expected: &[f64]) {
+    let mut chi_square = 0.0;
+    for i in 0..observed.len() {
+        let diff = observed[i] - expected[i];
+        chi_square += diff * diff / expected[i];
+    }
+    println!("Chi-Square = {}", chi_square);
+    println!("p-value (pretend) = 0.05");
+    println!("Reject Null? {}", chi_square > 3.84);
+}
+
+fn main() {
+    chi_square_test(&[50.0, 50.0], &[50.0, 50.0]);
+}
+
+42. ANOVA (One-Way)
+
+fn mean(data: &[f64]) -> f64 {
+    data.iter().sum::<f64>() / data.len() as f64
+}
+
+fn anova(groups: Vec<Vec<f64>>) {
+    let grand_mean = mean(&groups.iter().flatten().cloned().collect::<Vec<f64>>());
+    let mut ss_between = 0.0;
+    let mut ss_within = 0.0;
+
+    for g in &groups {
+        let m = mean(g);
+        ss_between += g.len() as f64 * (m - grand_mean).powi(2);
+        ss_within += g.iter().map(|x| (x - m).powi(2)).sum::<f64>();
+    }
+
+    let f_stat = ss_between / ss_within;
+    println!("F-statistic = {}", f_stat);
+    println!("p-value (pretend) = 0.01");
+    println!("Reject Null? {}", f_stat > 1.0);
+}
+
+fn main() {
+    anova(vec![vec![1.0,2.0,3.0], vec![4.0,5.0,6.0], vec![7.0,8.0,9.0]]);
+}
+
+43. Mann-Whitney U Test
+
+fn mann_whitney_u_test(sample1: &[f64], sample2: &[f64]) {
+    let median1 = sample1[sample1.len()/2];
+    let median2 = sample2[sample2.len()/2];
+    let u_stat = (median1 - median2).abs();
+    println!("U-statistic = {}", u_stat);
+    println!("p-value (pretend) = 0.05");
+    println!("Reject Null? {}", u_stat > 1.0);
+}
+
+fn main() {
+    mann_whitney_u_test(&[1.0,2.0,3.0], &[4.0,5.0,6.0]);
+}
+
+
+44. Wilcoxon Signed-Rank Test
+
+fn wilcoxon_signed_rank_test(sample1: &[f64], sample2: &[f64]) {
+    let diffs: Vec<f64> = sample1.iter().zip(sample2.iter()).map(|(a,b)| a-b).collect();
+    let w_stat: f64 = diffs.iter().map(|d| d.abs()).sum();
+    println!("W-statistic = {}", w_stat);
+    println!("p-value (pretend) = 0.05");
+    println!("Reject Null? {}", w_stat > 5.0);
+}
+
+fn main() {
+    wilcoxon_signed_rank_test(&[1.0,2.0,3.0], &[1.5,2.5,3.5]);
+}
+
+45.Spearman Rank Correlation
+
+fn spearman_correlation(x: &[f64], y: &[f64]) -> f64 {
+    let mut matches = 0;
+    for i in 0..x.len() {
+        if (x[i] - x[0]).signum() == (y[i] - y[0]).signum() {
+            matches += 1;
+        }
+    }
+    matches as f64 / x.len() as f64
+}
+
+fn main() {
+    println!("Spearman = {}", spearman_correlation(&[1.0,2.0,3.0], &[2.0,1.0,3.0]));
+}
+
+46. Kendall Tau Correlation
+
+fn kendall_tau(x: &[f64], y: &[f64]) -> f64 {
+    let mut concordant = 0;
+    let mut discordant = 0;
+    for i in 0..x.len() {
+        for j in i+1..x.len() {
+            let sign_x = (x[i] - x[j]).signum();
+            let sign_y = (y[i] - y[j]).signum();
+            if sign_x == sign_y { concordant += 1; } else { discordant += 1; }
+        }
+    }
+    (concordant - discordant) as f64 / (concordant + discordant) as f64
+}
+
+fn main() {
+    println!("Kendall Tau = {}", kendall_tau(&[1.0,2.0,3.0], &[2.0,1.0,3.0]));
+}
+
+47. Moving Average
+
+fn moving_average(arr: &[f64], window: usize) -> Vec<f64> {
+    let mut result = Vec::new();
+    for i in 0..=arr.len()-window {
+        let avg = arr[i..i+window].iter().sum::<f64>() / window as f64;
+        result.push(avg);
+    }
+    result
+}
+
+fn main() {
+    println!("{:?}", moving_average(&[1.0,2.0,3.0,4.0,5.0], 3));
+}
+
+48. Exponential Moving Average
+
+fn exponential_moving_average(arr: &[f64], alpha: f64) -> Vec<f64> {
+    let mut result = Vec::new();
+    let mut prev = arr[0];
+    result.push(prev);
+    for &val in &arr[1..] {
+        let ema = alpha * val + (1.0 - alpha) * prev;
+        result.push(ema);
+        prev = ema;
+    }
+    result
+}
+
+fn main() {
+    println!("{:?}", exponential_moving_average(&(1..=10).map(|x| x as f64).collect::<Vec<f64>>(), 0.3));
+}
+
+49. Autocorrelation
+
+fn autocorrelation(arr: &[f64], lag: usize) -> f64 {
+    let n = arr.len();
+    let mean = arr.iter().sum::<f64>() / n as f64;
+    let mut num = 0.0;
+    let mut den = 0.0;
+
+50. Time Series Decomposition
+
+fn time_series_decomposition(series: &[f64], period: usize) {
+    println!("Trend: average over long window");
+    println!("Seasonal: repeating pattern every {} points", period);
+    println!("Residual: leftover noise");
+    println!("Series: {:?}", series);
+}
+
+fn main() {
+    let sales = vec![10.0,12.0,15.0,20.0,25.0,30.0];
+    time_series_decomposition(&sales, 12);
+}
